@@ -1,14 +1,14 @@
 #! /bin/sh
 #
-# build static bash because we need exercises in minimalism
-# MIT licensed: google it or see robxu9.mit-license.org.
+# build script with dockcross
 #
-# For Linux, also builds musl for truly static linking.
 
 dash_version="0.5.10.2"
 dash_sha1="cd1e4df124b989ae64a315bdcb40fb52b281504c"
 musl_version="1.1.23"
 musl_sha1="98f3991d67e0e11dd091eb65890285d8417c7d05"
+
+release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
 if [ -z "$1" ]; then
     echo "Usage: $0 ARCH"
@@ -21,8 +21,10 @@ if [ -z "$1" ]; then
 fi
 
 CFLAGS=
+LDFLAGS=
 musl_configure=
 dash_configure=
+strip=
 arch="$1"
 case $arch in
     arm64)
@@ -41,6 +43,8 @@ case $arch in
 	musl_configure="--target i386-linux-gnu RANLIB=ranlib"
 	dash_configure="--target i386-unknown-linux-gnu"
 	CFLAGS="-march=i486 -m32"
+	LDFLAGS="-m32"
+	strip=strip
 	;;
     amd64)
 	dockcross_arch=linux-x64
@@ -146,16 +150,26 @@ echo "= building dash"
 
 dash_dir="dash-${dash_version}"
 ./dockcross bash -c "cd '${dash_dir}' && ./autogen.sh"
-./dockcross bash -c "cd '${dash_dir}' && ./configure 'CC=$CC -static $CFLAGS' 'CPP=$CC -static $CFLAGS -E' --enable-static ${dash_configure} --host=x86_64-unknown-linux-gnu"
+./dockcross bash -c "cd '${dash_dir}' && ./configure 'CC=$CC -static $CFLAGS' 'CPP=$CC -static $CFLAGS -E' 'LDFLAGS=$LDFLAGS' --enable-static ${dash_configure} --host=x86_64-unknown-linux-gnu"
 ./dockcross bash -c "cd '${dash_dir}' && make"
 
 cd "${curdir}"
 
-[ -d releases ] || mkdir releases
+[ -d "${release_dir}" ] || mkdir -p "${release_dir}"
 
 echo "= copy dash binary"
-cp ${build_dir}/dash-${dash_version}/src/dash.1 releases
-cp ${build_dir}/dash-${dash_version}/src/dash   "releases/dash-${arch}"
-${build_dir}/dockcross bash -c 'STRIP=$(echo $CC|sed s/-gcc\$/-strip/); $STRIP -s 'releases/dash-${arch}
+cp "${build_dir}/dash-${dash_version}/src/dash.1" "${release_dir}"
+cp "${build_dir}/dash-${dash_version}/src/dash"   "${release_dir}/dash-${arch}"
+if [ x"$strip" = x"" ]; then
+    "${build_dir}/dockcross" bash -c 'STRIP=$(echo $CC|sed s/-gcc\$/-strip/); $STRIP -s '"'${release_dir}/dash-${arch}'"
+else
+    "${build_dir}/dockcross" bash -c "$strip -s '${release_dir}/dash-${arch}'"
+fi
+
+# remove ACL at macOS
+uname_s=$(uname -s)
+if [ x"$uname_s" = x"Darwin" ]; then
+    xattr -d com.docker.owner "${release_dir}/dash-${arch}"
+fi
 
 echo "= done"

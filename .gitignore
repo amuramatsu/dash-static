@@ -1,5 +1,7 @@
 /build/
 /releases/
+/dash-static-*/
+/dash-static-*.tar.gz
 /archives/
 *.bak
 *~
