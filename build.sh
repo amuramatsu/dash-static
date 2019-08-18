@@ -62,6 +62,8 @@ if [ ! -d releases ]; then
 fi
 
 echo "= extracting dash binary"
-cp build/dash-${dash_version}/src/dash releases
+cp build/dash-${dash_version}/src/dash.1 releases
+cp build/dash-${dash_version}/src/dash   releases
+build/dockcross bash -c 'STRIP=$(echo $CC|sed s/-gcc\$/-strip/); $STRIP releases/dash'
 
 echo "= done"
