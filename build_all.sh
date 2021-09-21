@@ -3,7 +3,7 @@
 ./build.sh arm64
 ./build.sh armhf
 ./build.sh armel
-#./build.sh i486
+./build.sh i486
 ./build.sh amd64
 ./build.sh mips
 ./build.sh mipsel

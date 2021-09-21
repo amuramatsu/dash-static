@@ -26,6 +26,7 @@ musl_configure=
 dash_configure=
 strip=
 arch="$1"
+link_hack=
 case $arch in
     arm64)
 	dockcross_arch=linux-arm64
@@ -38,12 +39,13 @@ case $arch in
 	dockcross_arch=linux-armv5
     	CFLAGS="-mfloat-abi=soft"
     	;;
-    i486) #broken
+    i486)
 	dockcross_arch=linux-x86
 	musl_configure="--target i386-linux-gnu RANLIB=ranlib"
 	dash_configure="--target i386-unknown-linux-gnu"
 	CFLAGS="-march=i486 -m32"
 	LDFLAGS="-m32"
+	link_hack=-melf_i386
 	strip=strip
 	;;
     amd64)
@@ -60,6 +62,7 @@ case $arch in
 	musl_configure="--target powerpc-linux-gnu"
 	dash_configure="--target powerpc-uknown-linux-gnu"
 	CFLAGS="-m32 -mbig -mlong-double-64"
+	link_hack=-melf_powerpc
 	;;
     ppc64el)
 	dockcross_arch=linux-ppc64le
@@ -107,7 +110,6 @@ download() {
     curl -L -o "${archives_dir}/${filename}" "${URL}"
 }
 
-
 if [ -d "$build_dir" ]; then
   echo "= removing previous build directory"
   rm -rf "$build_dir"
@@ -145,6 +147,10 @@ musl_dir="musl-${musl_version}"
 
 echo "= setting CC to musl-gcc"
 CC="${dockerwork_dir}/musl-install/bin/musl-gcc"
+if [ ! -z "$link_hack" ]; then
+    echo "= hack for link with musl-gcc"
+    sed -i.bak "s/-dynamic-linker/$link_hack -dynamic-linker/" "${working_dir}/musl-install/lib/musl-gcc.specs"
+fi
 
 echo "= building dash"
 
