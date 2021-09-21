@@ -3,8 +3,8 @@
 # build script with dockcross
 #
 
-dash_version="0.5.10.2"
-dash_sha1="cd1e4df124b989ae64a315bdcb40fb52b281504c"
+dash_version="0.5.11.5"
+dash_sha1="ac1d533ec4eaae94936cb57dbf8f4c68ec3c4bfa"
 musl_version="1.2.2"
 musl_sha1="e7ba5f0a5f89c13843b955e916f1d9a9d4b6ab9a"
 
@@ -125,7 +125,7 @@ dockerwork_dir=$(./dockcross bash -c 'echo -n $(pwd)')
 
 # download tarballs
 echo "= downloading dash"
-download "https://git.kernel.org/pub/scm/utils/dash/dash.git/snapshot/dash-${dash_version}.tar.gz" $dash_sha1
+download "http://gondor.apana.org.au/~herbert/dash/files/dash-${dash_version}.tar.gz" $dash_sha1
 
 echo "= extracting dash"
 tar xf "${archives_dir}/dash-${dash_version}.tar.gz"
@@ -149,7 +149,7 @@ CC="${dockerwork_dir}/musl-install/bin/musl-gcc"
 echo "= building dash"
 
 dash_dir="dash-${dash_version}"
-./dockcross bash -c "cd '${dash_dir}' && ./autogen.sh"
+./dockcross bash -c "cd '${dash_dir}' && [ -x autogen.sh ] && ./autogen.sh"
 ./dockcross bash -c "cd '${dash_dir}' && ./configure 'CC=$CC -static $CFLAGS' 'CPP=$CC -static $CFLAGS -E' 'LDFLAGS=$LDFLAGS' --enable-static ${dash_configure} --host=x86_64-unknown-linux-gnu"
 ./dockcross bash -c "cd '${dash_dir}' && make"
 
