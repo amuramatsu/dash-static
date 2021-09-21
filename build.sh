@@ -169,7 +169,9 @@ fi
 # remove ACL at macOS
 uname_s=$(uname -s)
 if [ x"$uname_s" = x"Darwin" ]; then
-    xattr -d com.docker.owner "${release_dir}/dash-${arch}"
+    for a in com.docker.owner com.docker.grpcfuse.ownership; do
+        xattr -d "$a" "${release_dir}/dash-${arch}" >/dev/null 2>&1
+    done
 fi
 
 echo "= done"
