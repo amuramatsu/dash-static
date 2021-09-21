@@ -5,8 +5,8 @@
 
 dash_version="0.5.10.2"
 dash_sha1="cd1e4df124b989ae64a315bdcb40fb52b281504c"
-musl_version="1.1.23"
-musl_sha1="98f3991d67e0e11dd091eb65890285d8417c7d05"
+musl_version="1.2.2"
+musl_sha1="e7ba5f0a5f89c13843b955e916f1d9a9d4b6ab9a"
 
 release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
