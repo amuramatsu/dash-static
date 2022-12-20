@@ -5,8 +5,8 @@
 
 dash_version="0.5.11.5"
 dash_sha1="ac1d533ec4eaae94936cb57dbf8f4c68ec3c4bfa"
-musl_version="1.2.2"
-musl_sha1="e7ba5f0a5f89c13843b955e916f1d9a9d4b6ab9a"
+musl_version="1.2.3"
+musl_sha1="3b6b673196c2dc96b24c5d6028c5fa922457dd26"
 
 release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
@@ -55,7 +55,7 @@ case $arch in
 	dockcross_arch=linux-mips
 	;;
     mipsel)
-	dockcross_arch=linux-mipsel
+	dockcross_arch=linux-mipsel-lts
 	;;
     powerpc) #broken
 	dockcross_arch=linux-ppc64le
@@ -130,13 +130,13 @@ echo "= downloading dash"
 download "http://gondor.apana.org.au/~herbert/dash/files/dash-${dash_version}.tar.gz" $dash_sha1
 
 echo "= extracting dash"
-tar xf "${archives_dir}/dash-${dash_version}.tar.gz"
+gzip -dc "${archives_dir}/dash-${dash_version}.tar.gz" | tar xf -
 
 echo "= downloading musl"
 download "http://www.musl-libc.org/releases/musl-${musl_version}.tar.gz" $musl_sha1
 
 echo "= extracting musl"
-tar xf "${archives_dir}/musl-${musl_version}.tar.gz"
+gzip -dc "${archives_dir}/musl-${musl_version}.tar.gz" | tar xf -
 
 echo "= building musl"
 
