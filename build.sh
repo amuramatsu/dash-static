@@ -3,8 +3,8 @@
 # build script with dockcross
 #
 
-dash_version="0.5.11.5"
-dash_sha1="ac1d533ec4eaae94936cb57dbf8f4c68ec3c4bfa"
+dash_version="0.5.12"
+dash_sha1="56008c6dd68e9a299ef0b84ec5489d38c9ed90e7"
 musl_version="1.2.3"
 musl_sha1="3b6b673196c2dc96b24c5d6028c5fa922457dd26"
 
@@ -20,7 +20,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-CFLAGS=
+CFLAGS="-O3"
 LDFLAGS=
 musl_configure=
 dash_configure=
@@ -33,17 +33,17 @@ case $arch in
 	;;
     armhf)
 	dockcross_arch=linux-armv7
-	CFLAGS="-mfloat-abi=hard"
+	CFLAGS="$CFLAGS -mfloat-abi=hard"
 	;;
     armel)
 	dockcross_arch=linux-armv5
-    	CFLAGS="-mfloat-abi=soft"
-    	;;
+   	CFLAGS="$CFLAGS -mfloat-abi=soft"
+   	;;
     i486)
 	dockcross_arch=linux-x86
 	musl_configure="--target i386-linux-gnu RANLIB=ranlib"
 	dash_configure="--target i386-unknown-linux-gnu"
-	CFLAGS="-march=i486 -m32"
+	CFLAGS="$CFLAGS -march=i486 -m32"
 	LDFLAGS="-m32"
 	link_hack=-melf_i386
 	strip=strip
@@ -61,12 +61,12 @@ case $arch in
 	dockcross_arch=linux-ppc64le
 	musl_configure="--target powerpc-linux-gnu"
 	dash_configure="--target powerpc-uknown-linux-gnu"
-	CFLAGS="-m32 -mbig -mlong-double-64"
+	CFLAGS="$CFLAGS -m32 -mbig -mlong-double-64"
 	link_hack=-melf_powerpc
 	;;
     ppc64el)
 	dockcross_arch=linux-ppc64le
-	CFLAGS="-mlong-double-64"
+	CFLAGS="$CFLAGS -mlong-double-64"
 	;;
     s390x)
 	dockcross_arch=linux-s390x
@@ -77,8 +77,8 @@ case $arch in
 	;;
 esac
 
-build_dir="$(pwd)/build"
-archives_dir="$(pwd)/archives"
+build_dir="$PWD/build"
+archives_dir="$PWD/archives"
 
 sha1_digest() {
     FILE="$1"
@@ -127,7 +127,7 @@ dockerwork_dir=$(./dockcross bash -c 'echo -n $(pwd)')
 
 # download tarballs
 echo "= downloading dash"
-download "http://gondor.apana.org.au/~herbert/dash/files/dash-${dash_version}.tar.gz" $dash_sha1
+download "https://git.kernel.org/pub/scm/utils/dash/dash.git/snapshot/dash-${dash_version}.tar.gz" $dash_sha1
 
 echo "= extracting dash"
 gzip -dc "${archives_dir}/dash-${dash_version}.tar.gz" | tar xf -
@@ -180,4 +180,10 @@ if [ x"$uname_s" = x"Darwin" ]; then
     done
 fi
 
-echo "= done"
+echo done:
+for i in $(find "${build_dir}" -name dash -type f); do
+    strip $i
+    du -k $i
+    echo "       $(file $i | cut -d: -f2)"
+    ldd $i;
+done
