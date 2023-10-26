@@ -3,10 +3,10 @@
 # build script with dockcross
 #
 
-dash_version="0.5.11.5"
-dash_sha1="ac1d533ec4eaae94936cb57dbf8f4c68ec3c4bfa"
-musl_version="1.2.3"
-musl_sha1="3b6b673196c2dc96b24c5d6028c5fa922457dd26"
+dash_version="0.5.12"
+dash_sha1="e15444a93853f693774df003f87d9040ab600a5e"
+musl_version="1.2.4"
+musl_sha1="78eb982244b857dbacb2ead25cc0f631ce44204d"
 
 release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
