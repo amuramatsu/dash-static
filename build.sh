@@ -165,6 +165,7 @@ cd "${curdir}"
 [ -d "${release_dir}" ] || mkdir -p "${release_dir}"
 
 echo "= copy dash binary"
+cp "${build_dir}/dash-${dash_version}/COPYING"    "${release_dir}"
 cp "${build_dir}/dash-${dash_version}/src/dash.1" "${release_dir}"
 cp "${build_dir}/dash-${dash_version}/src/dash"   "${release_dir}/dash-${arch}"
 if [ x"$strip" = x"" ]; then
