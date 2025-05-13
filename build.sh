@@ -5,8 +5,12 @@
 
 dash_version="0.5.12"
 dash_sha1="e15444a93853f693774df003f87d9040ab600a5e"
-musl_version="1.2.4"
-musl_sha1="78eb982244b857dbacb2ead25cc0f631ce44204d"
+musl_version="1.2.5"
+musl_sha1="36210d3423172a40ddcf83c762207c5f760b60a6"
+musl_patch1="https://www.openwall.com/lists/musl/2025/02/13/1/1"
+musl_patch1_sha1="83b881fbe8a5d4d340977723adda4f8ac66592f0"
+musl_patch2="https://www.openwall.com/lists/musl/2025/02/13/1/2"
+musl_patch2_sha1="0ceaa0467429057efce879b6346efa4f58c7cd4d"
 
 release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
@@ -99,8 +103,11 @@ sha1_digest() {
 download() {
     URL="$1"
     SHA="$2"
+    filename="$3"
     [ -d "$archives_dir" ] || mkdir -p "$archives_dir"
-    filename="$(basename "$URL")"
+    if [ x"$filename" = x"" ]; then
+	filename="$(basename "$URL")"
+    fi
     if [ -r "${archives_dir}/${filename}" ]; then
 	digest=$(sha1_digest "${archives_dir}/${filename}")
 	if [ x"$digest" = x"$SHA" ]; then
@@ -135,14 +142,18 @@ gzip -dc "${archives_dir}/dash-${dash_version}.tar.gz" | tar xf -
 
 echo "= downloading musl"
 download "http://www.musl-libc.org/releases/musl-${musl_version}.tar.gz" $musl_sha1
+download $musl_patch1 $musl_patch1_sha1 musl.patch1
+download $musl_patch2 $musl_patch2_sha1 musl.patch2
 
 echo "= extracting musl"
+musl_dir="musl-${musl_version}"
 gzip -dc "${archives_dir}/musl-${musl_version}.tar.gz" | tar xf -
+(cd ${musl_dir} && patch -p1 < "${archives_dir}/musl.patch1")
+(cd ${musl_dir} && patch -p1 < "${archives_dir}/musl.patch2")
 
 echo "= building musl"
 
 install_dir="${dockerwork_dir}/musl-install"
-musl_dir="musl-${musl_version}"
 ./dockcross bash -c "cd ${musl_dir} && ./configure '--prefix=${install_dir}' --disable-shared ${musl_configure} 'CFLAGS=$CFLAGS'"
 ./dockcross bash -c "cd ${musl_dir} && make install"
 
