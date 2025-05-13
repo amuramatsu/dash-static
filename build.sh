@@ -62,12 +62,9 @@ case $arch in
     mipsel)
 	dockcross_arch=linux-mipsel-lts
 	;;
-    powerpc) #broken
-	dockcross_arch=linux-ppc64le
-	musl_configure="--target powerpc-linux-gnu"
-	dash_configure="--target powerpc-uknown-linux-gnu"
-	CFLAGS="-m32 -mbig -mlong-double-64"
-	link_hack=-melf_powerpc
+    powerpc)
+	dockcross_arch=linux-ppc
+	CFLAGS="-mbig -mlong-double-64"
 	;;
     ppc64el)
 	dockcross_arch=linux-ppc64le
