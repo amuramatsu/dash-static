@@ -9,6 +9,8 @@
 ./build.sh mipsel
 ./build.sh powerpc
 ./build.sh ppc64el
+./build.sh riscv32
+./build.sh riscv64
 ./build.sh s390x
 
 dist=$(echo dash-static-*_musl-*)
