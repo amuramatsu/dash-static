@@ -3,8 +3,8 @@
 # build script with dockcross
 #
 
-dash_version="0.5.12"
-dash_sha1="e15444a93853f693774df003f87d9040ab600a5e"
+dash_version="0.5.13.1"
+dash_sha1="eaf654323d24324019c38242cc217e31909132b3"
 musl_version="1.2.5"
 musl_sha1="36210d3423172a40ddcf83c762207c5f760b60a6"
 musl_patch1="https://www.openwall.com/lists/musl/2025/02/13/1/1"
