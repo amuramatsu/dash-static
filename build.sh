@@ -3,14 +3,14 @@
 # build script with dockcross
 #
 
-dash_version="0.5.13.1"
-dash_sha1="eaf654323d24324019c38242cc217e31909132b3"
-musl_version="1.2.5"
-musl_sha1="36210d3423172a40ddcf83c762207c5f760b60a6"
-musl_patch1="https://www.openwall.com/lists/musl/2025/02/13/1/1"
-musl_patch1_sha1="83b881fbe8a5d4d340977723adda4f8ac66592f0"
-musl_patch2="https://www.openwall.com/lists/musl/2025/02/13/1/2"
-musl_patch2_sha1="0ceaa0467429057efce879b6346efa4f58c7cd4d"
+dash_version="0.5.13.3"
+dash_sha1="b303999942e3e9507b74dd9fbef1793bbb13d4bc"
+musl_version="1.2.6"
+musl_sha1="d52bd74e07ae3d4057787585753580fc7479289f"
+musl_patch1="https://www.openwall.com/lists/musl/2026/04/03/2/1"
+musl_patch1_sha1="cfae548113bd1e0eeb21b2b95b6d927425aa274e"
+musl_patch2="https://www.openwall.com/lists/musl/2026/04/10/3/1"
+musl_patch2_sha1="475cd15507b441b41175d2e33ea30c086b15c2aa"
 
 release_dir="dash-static-${dash_version}_musl-${musl_version}"
 
@@ -166,6 +166,11 @@ if [ ! -z "$link_hack" ]; then
     echo "= hack for link with musl-gcc"
     sed -i.bak "s/-dynamic-linker/$link_hack -dynamic-linker/" "${working_dir}/musl-install/lib/musl-gcc.specs"
 fi
+
+echo "= sync and sleep"
+
+./dockcross bash -c "sync; sync"
+sync; sync; sleep 1
 
 echo "= building dash"
 
